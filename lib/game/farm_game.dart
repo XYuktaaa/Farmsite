@@ -51,7 +51,7 @@ class FarmGame extends FlameGame {
   }
 
   void _layout() {
-    const double bottomReserved = 240;
+    final double bottomReserved = (size.y * 0.32).clamp(170.0, 240.0);
     const double margin = 16;
     const double gap = 14;
 

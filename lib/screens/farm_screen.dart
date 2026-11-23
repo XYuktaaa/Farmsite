@@ -197,7 +197,11 @@ class _FarmScreenState extends State<FarmScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.grass,
-      body: SafeArea(
+      body: Center(
+  child: ConstrainedBox(
+    constraints: const BoxConstraints(maxWidth: 480),
+    child: SizedBox.expand(
+      child: SafeArea(
         child: Stack(
           children: [
             Positioned.fill(child: GameWidget(game: _game)),
@@ -206,6 +210,9 @@ class _FarmScreenState extends State<FarmScreen> {
           ],
         ),
       ),
+    ),
+  ),
+),
     );
   }
 
@@ -361,6 +368,8 @@ class _FarmScreenState extends State<FarmScreen> {
         final inSoil = stage != null &&
             stage != PlotStage.empty &&
             stage != PlotStage.withered;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+		final buttonSize = screenWidth < 350 ? 36.0 : 46.0;
 
         VoidCallback? act(bool ok, void Function(int) f) =>
             (ok && p != null) ? () => f(p.id) : null;
@@ -385,6 +394,7 @@ class _FarmScreenState extends State<FarmScreen> {
                           _ActionButton(
                             icon: Icons.agriculture,
                             label: 'Till',
+                            buttonSize: buttonSize,
                             onTap: act(
                                 stage == PlotStage.empty || stage == PlotStage.withered,
                                 gs.till),
@@ -392,16 +402,19 @@ class _FarmScreenState extends State<FarmScreen> {
                           _ActionButton(
                             icon: Icons.grass,
                             label: 'Sow',
+                            buttonSize: buttonSize,
                             onTap: act(stage == PlotStage.prepared, (_) => _pickSeed()),
                           ),
                           _ActionButton(
                             icon: Icons.water_drop,
                             label: 'Water',
+                            buttonSize: buttonSize,
                             onTap: act(inSoil, gs.water),
                           ),
                           _ActionButton(
                             icon: Icons.science,
                             label: 'Fertilize',
+                            buttonSize: buttonSize,
                             onTap: act(
                                 stage == PlotStage.sown || stage == PlotStage.growing,
                                 gs.fertilize),
@@ -409,6 +422,7 @@ class _FarmScreenState extends State<FarmScreen> {
                           _ActionButton(
                             icon: Icons.shopping_basket,
                             label: 'Harvest',
+                            buttonSize: buttonSize,
                             onTap: act(stage == PlotStage.mature, gs.harvest),
                           ),
                         ],
@@ -437,11 +451,17 @@ class _FarmScreenState extends State<FarmScreen> {
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.buttonSize = 46,
+  });
 
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final double buttonSize;
 
   @override
   Widget build(BuildContext context) {
@@ -456,8 +476,8 @@ class _ActionButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 46,
-                height: 46,
+                width: buttonSize,
+                height: buttonSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const RadialGradient(
